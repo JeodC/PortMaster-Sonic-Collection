@@ -52,6 +52,27 @@ $ESUDO chmod 777 $GAMEDIR/sonic2013
 $ESUDO chmod 777 $GAMEDIR/sonic2absolute
 
 # Modify ScreenWidth
+LOW=214 # 3:2
+MED=320 # 4:3
+HIGH=426 # 16:9
+
+# Set WIDTH based on DISPLAY_WIDTH
+case $DISPLAY_WIDTH in
+  [0-2][0-9][0-9])  # 0 to 299 range
+    WIDTH=$LOW
+    ;;
+  [3-9][0-9][0-9])  # 300 to 999 range
+    WIDTH=$MED
+    ;;
+  [1-9][0-9][0-9][0-9])  # 1000 and above range
+    WIDTH=$HIGH
+    ;;
+  *)
+    echo "Unknown screen width: $DISPLAY_WIDTH"
+    WIDTH=$MED  # Default value or handle as needed
+    ;;
+esac
+
 if grep -q "^ScreenWidth=[0-9]\+" "$GAMEDIR/settings.ini"; then
     sed -i "s/^ScreenWidth=[0-9]\+/ScreenWidth=$WIDTH/" "$GAMEDIR/settings.ini"
 else
