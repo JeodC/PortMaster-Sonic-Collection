@@ -20,7 +20,8 @@ source $controlfolder/device_info.txt
 [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
 
 # Set variables
-GAMEDIR="/$directory/ports/sonic1"
+GAMEDIR="/$directory/ports/sonic.2"
+WIDTH=$((DISPLAY_WIDTH / 2))
 > "$GAMEDIR/log.txt" && exec > >(tee "$GAMEDIR/log.txt") 2>&1
 
 # Set current virtual screen
@@ -35,7 +36,7 @@ fi
 cd $GAMEDIR
 
 # Exports
-LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$GAMEDIR/libs"
+LD_LIBRARY_PATH="$GAMEDIR/libs":$LD_LIBRARY_PATH
 
 # Setup gl4es environment
 if [ -f "${controlfolder}/libgl_${CFW_NAME}.txt" ]; then 
@@ -48,7 +49,7 @@ fi
 $ESUDO chmod 666 /dev/tty0
 $ESUDO chmod 666 /dev/tty1
 $ESUDO chmod 777 $GAMEDIR/sonic2013
-$ESUDO chmod 777 $GAMEDIR/sonicforever
+$ESUDO chmod 777 $GAMEDIR/sonic2absolute
 
 # Modify ScreenWidth
 LOW=214 # 3:2
@@ -78,11 +79,11 @@ else
     echo "Possible invalid or missing settings.ini!"
 fi
 
-# Check if running Sonic Forever
-result=$(grep "^SonicForeverMod=true" "$GAMEDIR/mods/modconfig.ini")
+# Check if running Sonic 2 Absolute
+result=$(grep "^Sonic2Absolute=true" "$GAMEDIR/mods/modconfig.ini")
 
 if [ -n "$result" ]; then
-    GAME=sonicforever
+    GAME=sonic2absolute
 else
     GAME=sonic2013
 fi

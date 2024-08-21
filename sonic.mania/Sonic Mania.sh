@@ -20,7 +20,7 @@ source $controlfolder/device_info.txt
 [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
 
 # Set variables
-GAMEDIR="/$directory/ports/sonicmania"
+GAMEDIR="/$directory/ports/sonic.mania"
 > "$GAMEDIR/log.txt" && exec > >(tee "$GAMEDIR/log.txt") 2>&1
 
 # Set current virtual screen
