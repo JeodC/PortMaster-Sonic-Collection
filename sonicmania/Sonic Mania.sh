@@ -40,7 +40,7 @@ LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$GAMEDIR/libs"
 # Permissions
 $ESUDO chmod 666 /dev/tty0
 $ESUDO chmod 666 /dev/tty1
-$ESUDO chmod 777 $GAMEDIR/soniccd
+$ESUDO chmod 777 $GAMEDIR/sonicmania
 
 # Run the game
 echo "Loading, please wait!" > $CUR_TTY
