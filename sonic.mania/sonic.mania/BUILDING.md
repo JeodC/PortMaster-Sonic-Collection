@@ -7,7 +7,7 @@ apt install build-essential cmake libglew-dev libglfw3-dev libtheora-dev
 git clone https://github.com/RSDKModding/Sonic-Mania-Decompilation
 cd Sonic-Mania-Decompilation
 git submodule update --init --recursive
-cmake -B build -DRETRO_DISABLE_PLUS=on -DRETRO_SUBSYSTEM=SDL2
+cmake -B build -DRETRO_REVISION=2 -DRETRO_DISABLE_PLUS=on -DRETRO_SUBSYSTEM=SDL2
 cmake --build build --config release
 ```
 
@@ -17,7 +17,7 @@ apt install build-essential cmake libglew-dev libglfw3-dev libtheora-dev
 git clone https://github.com/RSDKModding/Sonic-Mania-Decompilation
 cd Sonic-Mania-Decompilation
 git submodule update --init --recursive
-cmake -B build -DRETRO_DISABLE_PLUS=off -DRETRO_SUBSYSTEM=SDL2
+cmake -B build -DRETRO_REVISION=2 -DRETRO_DISABLE_PLUS=off -DRETRO_SUBSYSTEM=SDL2
 cmake --build build --config release
 ```
 
