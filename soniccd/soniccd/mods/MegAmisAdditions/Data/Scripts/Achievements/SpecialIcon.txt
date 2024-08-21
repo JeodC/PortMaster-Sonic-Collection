@@ -1,0 +1,391 @@
+//----------------Sonic CD Special Icon Script----------------//
+//--------Scripted by Christian Whitehead 'The Taxman'--------//
+//-------Unpacked By Rubberduckycooly's Script Unpacker-------//
+
+// Aliases
+#alias Object.Value0		:	Object.Timer
+#alias Object.Value1		:	Object.Minutes
+#alias Object.Value2		:	Object.Seconds
+#alias Object.Value3		:	Object.Milliseconds
+#alias Object.Value4		:	Object.LockedZone
+#alias Object.PropertyValue	:	Object.Portrait
+
+// Menu Control Aliases
+#alias Object[0].Value2		:	MenuControl.SelectedButton			// Only used for Mobile
+#alias Object[0].Value3		:	MenuControl.SavedRound				// This is used AFTER you play in time attack
+#alias Object[0].State		:	MenuControl.State					// This is used AFTER you play in time attack
+
+// States
+#alias 0	:	ROUNDICON_BLANK
+#alias 1	:	ROUNDICON_SELECTED_ZONE
+
+// MenuControl States
+#alias 2	:	MENUCONTROL_CONTROLS
+#alias 3	:	MENUCONTROL_BLANK
+#alias 4	:	MENUCONTROL_RETURN_TO_MENU
+#alias 5	:	MENUCONTROL_ENTER_SM
+
+// Global SFX
+#alias 27	:	SFX_G_SELECT
+
+// Property Values
+#alias 0	:	SPECIAL_STAGE_1_ICON
+#alias 1	:	SPECIAL_STAGE_2_ICON
+#alias 2	:	SPECIAL_STAGE_3_ICON
+#alias 3	:	SPECIAL_STAGE_4_ICON
+#alias 4	:	SPECIAL_STAGE_5_ICON
+#alias 5	:	SPECIAL_STAGE_6_ICON
+#alias 6	:	SPECIAL_STAGE_7_ICON
+#alias 7	:	EXIT_ICON
+
+
+sub ObjectMain
+#platform: Mobile
+	if Options.PhysicalControls == false
+		if MenuControl.State == MENUCONTROL_CONTROLS
+			if Object.LockedZone == false
+				CheckLower(Object.Portrait, 4)
+				TempValue0 = CheckResult
+				CheckEqual(Object.Portrait, 7)
+				TempValue0 |= CheckResult
+				if TempValue0 == true
+					TempValue0 = Object.iXPos
+					if Object.Portrait < 7
+						TempValue0 -= 34
+					else
+						TempValue0 -= 245
+					end if
+					
+					TempValue1  = Object.iXPos
+					TempValue1 += 34
+					TempValue2  = Object.iYPos
+					TempValue2 -= 45
+					TempValue3  = Object.iYPos
+					TempValue3 += 45
+					
+					CheckTouchRect(TempValue0, TempValue2, TempValue1, TempValue3)
+					if CheckResult > -1
+						MenuControl.SelectedButton = Object.Portrait
+					else
+						CheckTouchRect(0, 0, Screen.XSize, Screen.YSize)
+						if CheckResult < 0
+							if MenuControl.SelectedButton == Object.Portrait
+								if Object.State != ROUNDICON_SELECTED_ZONE
+									PlaySfx(SFX_G_SELECT, false)
+								endif
+								Object.State = ROUNDICON_SELECTED_ZONE
+								if Object.Portrait >= 4
+									MenuControl.State=MENUCONTROL_BLANK
+									StopMusic()
+								endif
+							endif
+						else
+							if MenuControl.SelectedButton == Object.Portrait
+								MenuControl.SelectedButton = -1
+							end if
+						end if
+					end if
+				end if
+			end if
+		end if
+	end if
+#endplatform
+end sub
+
+
+sub ObjectDraw
+	DrawSprite(10)
+	// Icon Movement
+	Object.Rotation++
+	Object.Rotation &= 511
+	Cos(TempValue0, Object.Rotation)
+	TempValue0 >>= 4
+	Sin(TempValue1, Object.Rotation)
+	TempValue1 >>= 4
+	
+	switch Object.Portrait
+	case SPECIAL_STAGE_1_ICON
+		TempValue0 += 64
+		TempValue1 += 76
+		break
+	case SPECIAL_STAGE_2_ICON
+		TempValue0 += 320
+		TempValue1 += 76
+		break
+	case SPECIAL_STAGE_3_ICON
+		TempValue0 += 448
+		TempValue1 += 76
+		break
+	case SPECIAL_STAGE_4_ICON
+		TempValue0 += 64
+		TempValue1 += 220
+		break
+	case SPECIAL_STAGE_5_ICON
+		TempValue0 += 192
+		TempValue1 += 220
+		break
+	case SPECIAL_STAGE_6_ICON
+		TempValue0 += 320
+		TempValue1 += 220
+		break
+	case SPECIAL_STAGE_7_ICON
+		TempValue0 += 448
+		TempValue1 += 220
+		break
+	end switch
+
+	if Object.Portrait < SPECIAL_STAGE_5_ICON	// Draw for all special stages
+		VertexBuffer[0].x   = Object.XPos
+		VertexBuffer[0].x >>= 16
+		VertexBuffer[0].x  -= 0
+		VertexBuffer[0].u   = TempValue0
+		VertexBuffer[0].u  -= 0
+		VertexBuffer[0].y   = Object.YPos
+		VertexBuffer[0].y >>= 16
+		VertexBuffer[0].y  -= 43
+		VertexBuffer[0].v   = TempValue1
+		VertexBuffer[0].v  -= 43
+		VertexBuffer[1].x   = Object.XPos
+		VertexBuffer[1].x >>= 16
+		VertexBuffer[1].x  += 0
+		VertexBuffer[1].u   = TempValue0
+		VertexBuffer[1].u  += 0
+		VertexBuffer[1].y   = VertexBuffer[0].y
+		VertexBuffer[1].v   = VertexBuffer[0].v
+		VertexBuffer[2].x   = VertexBuffer[0].x
+		VertexBuffer[2].u   = VertexBuffer[0].u
+		VertexBuffer[2].y   = Object.YPos
+		VertexBuffer[2].y >>= 16
+		VertexBuffer[2].y  += 24
+		VertexBuffer[2].v   = TempValue1
+		VertexBuffer[2].v  += 24
+		VertexBuffer[3].x   = VertexBuffer[1].x
+		VertexBuffer[3].u   = VertexBuffer[1].u
+		VertexBuffer[3].y   = VertexBuffer[2].y
+		VertexBuffer[3].v   = VertexBuffer[2].v
+		Draw3DScene()
+	else
+		DrawSprite(22)
+	end if
+
+	TempValue0  = Object.Portrait
+	TempValue0 += 24
+	DrawSprite(TempValue0)
+	DrawSprite(Object.Frame)
+	if Object.State == ROUNDICON_SELECTED_ZONE
+		TempValue0   = Object.Timer
+		TempValue0  &= 3
+		TempValue0 >>= 1
+		if TempValue0 == 0
+			if MenuControl.SavedRound == Object.Portrait
+				if Object.Portrait >= SPECIAL_STAGE_5_ICON
+					DrawSprite(36)
+				else
+					DrawSprite(21)
+				end if
+			end if
+		end if
+
+		Object.Timer++
+		if Object.Timer == 30
+			Object.Timer = 0
+			Object.State = ROUNDICON_BLANK
+			if Object.Portrait >= SPECIAL_STAGE_5_ICON
+				MenuControl.State = MENUCONTROL_RETURN_TO_MENU
+			else
+				MenuControl.State = MENUCONTROL_ENTER_SM
+				MenuControl.SelectedButton = -1
+			end if
+		end if
+	else
+		if MenuControl.State == MENUCONTROL_CONTROLS
+			if MenuControl.SavedRound == Object.PropertyValue
+				if Object.Portrait >= SPECIAL_STAGE_5_ICON
+					DrawSprite(36)
+				else
+					DrawSprite(21)
+				end if
+			end if
+		end if
+	end if
+	
+	if Object.LockedZone == true
+		DrawSprite(21)
+	end if
+end sub
+
+
+sub ObjectStartup
+	LoadSpriteSheet("Achievements/Achievements.gif")
+
+	SpriteFrame(0, 0, 6, 8, 330, 577)		// #0  - 0
+	SpriteFrame(0, 0, 6, 8, 337, 577)		// #1  - 1
+	SpriteFrame(0, 0, 6, 8, 344, 577)		// #2  - 2
+	SpriteFrame(0, 0, 6, 8, 351, 577)		// #3  - 3
+	SpriteFrame(0, 0, 6, 8, 330, 586)		// #4  - 4
+	SpriteFrame(0, 0, 6, 8, 337, 586)		// #5  - 5
+	SpriteFrame(0, 0, 6, 8, 344, 586)		// #6  - 6
+	SpriteFrame(0, 0, 6, 8, 351, 586)		// #7  - 7
+	SpriteFrame(0, 0, 6, 8, 330, 595)		// #8  - 8
+	SpriteFrame(0, 0, 6, 8, 337, 595)		// #9  - 9
+	SpriteFrame(-34, -45, 68, 68, 1, 609)	// #10 - Border
+	SpriteFrame(-32, 15, 64, 16, 70, 577)	// #11 - Special Zone 1
+	SpriteFrame(-32, 15, 64, 16, 135, 577)	// #12 - Special Zone 2
+	SpriteFrame(-32, 15, 64, 16, 200, 577)	// #13 - Special Zone 3
+	SpriteFrame(-32, 15, 64, 16, 265, 577)	// #14 - Special Zone 4
+	SpriteFrame(-32, 15, 64, 16, 70, 593)	// #15 - Special Zone 5
+	SpriteFrame(-32, 15, 64, 16, 135, 593)	// #16 - Special Zone 6
+	SpriteFrame(-32, 15, 64, 16, 200, 593)	// #17 - Special Zone 7
+	SpriteFrame(-32, 15, 64, 16, 265, 593)	// #18 - Total Time
+	SpriteFrame(-32, 31, 64, 13, 70, 638)	// #19 - ' "
+	SpriteFrame(-32, 31, 64, 13, 70, 652)	// #20 -  ' "
+	SpriteFrame(-35, -46, 70, 70, 441, 860)	// #21 - Selected Border
+	SpriteFrame(-29, -22, 56, 21, 223, 679)	// #22 - Exit
+	SpriteFrame(20, 16, 8, 13, 330, 604)
+	ReadSaveRAM()
+	
+	if SaveRAM[265] == true
+		SpriteFrame(-32, -43, 64, 64, 66, 66)
+	else
+		SpriteFrame(-32, -43, 64, 64, 66, 196)
+	endif
+	
+	if SaveRAM[266] == true
+		SpriteFrame(-32, -43, 64, 64, 131, 66)
+	else
+		SpriteFrame(-32, -43, 64, 64, 131, 196)
+	endif
+	
+	if SaveRAM[267] == true
+		SpriteFrame(-32, -43, 64, 64, 196, 66)
+	else
+		SpriteFrame(-32, -43, 64, 64, 196, 196)
+	endif
+	
+	if SaveRAM[268] == true
+		SpriteFrame(-32, -43, 64, 64, 261, 66)
+	else
+		SpriteFrame(-32, -43, 64, 64, 261, 196)
+	endif
+	
+	SpriteFrame(-34, -45, 278, 68, 122, 371)
+	SpriteFrame(-32, -43, 64, 64, 326, 1)
+	SpriteFrame(-32, -43, 64, 64, 391, 1)
+	SpriteFrame(-244, -45, 278, 68, 122, 371)
+	SpriteFrame(-32, -43, 64, 64, 66, 66)
+	SpriteFrame(-32, -43, 64, 64, 131, 66)
+	SpriteFrame(-32, -43, 64, 64, 196, 66)
+	SpriteFrame(-32, -43, 64, 64, 261, 66)
+	SpriteFrame(-245, -46, 280, 70, 122, 440)
+
+	ArrayPos0 = 32
+	while ArrayPos0 < 1056
+		if Object[ArrayPos0].Type == TypeName[Special Icon]
+			Object[ArrayPos0].Frame  = Object[ArrayPos0].Portrait
+			Object[ArrayPos0].Frame += 11
+
+			Object[ArrayPos0].Rotation   = Object[ArrayPos0].Portrait
+			Object[ArrayPos0].Rotation <<= 8
+
+			if Object[ArrayPos0].Portrait > 3
+				Object[ArrayPos0].Rotation += 256
+			end if
+		end if
+		ArrayPos0++
+	loop
+	
+	3DScene.NoVertices = 4
+	3DScene.NoFaces = 1
+	FaceBuffer[0].a = 0
+	FaceBuffer[0].b = 1
+	FaceBuffer[0].c = 2
+	FaceBuffer[0].d = 3
+	FaceBuffer[0].Flag = 1
+end sub
+
+
+// ========================
+// Editor Subs
+// ========================
+
+sub RSDKEdit
+	if Editor.ReturnVariable == true
+		switch Editor.VariableID
+		case EDIT_VAR_PROPVAL // Property Value
+			CheckResult = Object.PropertyValue
+			CheckResult &= 7
+			break
+		case 0 // roundID
+			CheckResult = Object.PropertyValue
+			CheckResult &= 7
+			break
+		end switch
+	else
+		switch Editor.VariableID
+		case EDIT_VAR_PROPVAL // Property Value
+			Object.PropertyValue = Editor.VariableValue
+			Object.PropertyValue &= 7
+			break
+		case 0 // roundID
+			Object.PropertyValue = Editor.VariableValue
+			Object.PropertyValue &= 7
+			break
+		end switch
+	end if
+end sub
+
+
+sub RSDKDraw
+	Object.Frame = Object.PropertyValue
+	Object.Frame += 11
+
+	DrawSprite(10)
+
+	if Object.PropertyValue < 7	// Draw for all main stages
+		DrawSprite(19)
+	else	// Draw the Exit
+		DrawSprite(20)
+		DrawSprite(22)
+	end if
+
+	DrawSprite(Object.Frame)
+end sub
+
+
+sub RSDKLoad
+	LoadSpriteSheet("TAttack/TimeAttack.gif")
+	SpriteFrame(0, 0, 6, 8, 330, 577)		// #0  - 0
+	SpriteFrame(0, 0, 6, 8, 337, 577)		// #1  - 1
+	SpriteFrame(0, 0, 6, 8, 344, 577)		// #2  - 2
+	SpriteFrame(0, 0, 6, 8, 351, 577)		// #3  - 3
+	SpriteFrame(0, 0, 6, 8, 330, 586)		// #4  - 4
+	SpriteFrame(0, 0, 6, 8, 337, 586)		// #5  - 5
+	SpriteFrame(0, 0, 6, 8, 344, 586)		// #6  - 6
+	SpriteFrame(0, 0, 6, 8, 351, 586)		// #7  - 7
+	SpriteFrame(0, 0, 6, 8, 330, 595)		// #8  - 8
+	SpriteFrame(0, 0, 6, 8, 337, 595)		// #9  - 9
+	SpriteFrame(-34, -45, 68, 90, 1, 609)	// #10 - Border
+	SpriteFrame(-32, 15, 64, 16, 66, 764)	// #11 - Special Zone 1
+	SpriteFrame(-32, 15, 64, 16, 131, 764)	// #12 - Special Zone 2
+	SpriteFrame(-32, 15, 64, 16, 196, 764)	// #13 - Special Zone 3
+	SpriteFrame(-32, 15, 64, 16, 261, 764)	// #14 - Special Zone 4
+	SpriteFrame(-32, 15, 64, 16, 66, 780)	// #15 - Special Zone 5
+	SpriteFrame(-32, 15, 64, 16, 131, 780)	// #16 - Special Zone 6
+	SpriteFrame(-32, 15, 64, 16, 196, 780)	// #17 - Special Zone 7
+	SpriteFrame(-32, 15, 64, 16, 265, 593)	// #18 - Total Time
+	SpriteFrame(-32, 31, 64, 13, 70, 638)	// #19 - ' "
+	SpriteFrame(-32, 31, 64, 13, 70, 652)	// #20 -  ' "
+	SpriteFrame(-35, -46, 70, 92, 441, 860)	// #21 - Selected Border
+	SpriteFrame(-29, -22, 56, 21, 223, 679)	// #22 - Exit
+
+	AddEditorVariable("roundID")
+	SetActiveVariable("roundID")
+	AddEnumVariable("Special Zone 1", 0)
+	AddEnumVariable("Special Zone 2", 1)
+	AddEnumVariable("Special Zone 3", 2)
+	AddEnumVariable("Special Zone 4", 3)
+	AddEnumVariable("Special Zone 5", 4)
+	AddEnumVariable("Special Zone 6", 5)
+	AddEnumVariable("Special Zone 7", 6)
+	AddEnumVariable("Total Time", 7)
+end sub
