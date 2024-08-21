@@ -11,7 +11,7 @@ Add your Sonic The Hedgehog `Data.rsdk` file to `ports/sonic1`. You can retrieve
 |DOWN + ABXY|Spindash|
 
 ## Using mods
-Open the dev menu by pressing L3 or Select and choose your mods to activate.
+Open the dev menu by pressing Select and choose your mods to activate.
 
 ## Thanks
 christianhaitan -- the original port  

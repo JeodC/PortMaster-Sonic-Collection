@@ -1,3 +1,0 @@
-/mnt/sdcard/ROMS/Ports/Sonic CD.sh: line 84: ./: Is a directory
-/mnt/sdcard/ROMS/Ports/Sonic CD.sh: line 89: 10643 Killed                  $GPTOKEYB $GAME -c "sonic.gptk"
-/mnt/sdcard/ROMS/Ports/Sonic CD.sh: line 87: systemctl: command not found
