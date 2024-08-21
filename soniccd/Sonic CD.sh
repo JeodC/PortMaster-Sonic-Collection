@@ -56,10 +56,10 @@ HIGH=426 # 16:9
 
 # Set WIDTH based on DISPLAY_WIDTH
 case $DISPLAY_WIDTH in
-  [0-2][0-9][0-9])  # 0 to 299 range
+  [0-3][0-9][0-9])  # 0 to 399 range
     WIDTH=$LOW
     ;;
-  [3-9][0-9][0-9])  # 300 to 999 range
+  [4-9][0-9][0-9])  # 400 to 999 range
     WIDTH=$MED
     ;;
   [1-9][0-9][0-9][0-9])  # 1000 and above range
@@ -74,7 +74,7 @@ esac
 if grep -q "^ScreenWidth=[0-9]\+" "$GAMEDIR/settings.ini"; then
     sed -i "s/^ScreenWidth=[0-9]\+/ScreenWidth=$WIDTH/" "$GAMEDIR/settings.ini"
 else
-    echo "Possible invalid or missing settings.ini!"
+    echo "Possible invalid or missing settings.ini!" > $CUR_TTY
 fi
 
 # Run the game
