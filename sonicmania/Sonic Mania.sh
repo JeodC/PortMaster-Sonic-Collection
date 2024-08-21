@@ -43,26 +43,20 @@ $ESUDO chmod 666 /dev/tty1
 $ESUDO chmod 777 $GAMEDIR/sonicmania
 
 # Modify PixWidth
-LOW=214 # 3:2
 MED=320 # 4:3
 HIGH=424 # 16:9
 
-# Set WIDTH based on DISPLAY_WIDTH
-case $DISPLAY_WIDTH in
-  [0-3][0-9][0-9])  # 0 to 399 range
-    WIDTH=$LOW
-    ;;
-  [4-9][0-9][0-9])  # 400 to 999 range
-    WIDTH=$MED
-    ;;
-  [1-9][0-9][0-9][0-9])  # 1000 and above range
+# Calculate the aspect ratio as a floating-point number
+ASPECT=$(awk "BEGIN {print $DISPLAY_WIDTH / $DISPLAY_HEIGHT}")
+
+# Set WIDTH based on aspect ratio comparisons
+if awk "BEGIN {exit ($ASPECT > 1.3)}"; then
     WIDTH=$HIGH
-    ;;
-  *)
-    echo "Unknown screen width: $DISPLAY_WIDTH"
-    WIDTH=$MED  # Default value or handle as needed
-    ;;
-esac
+elif awk "BEGIN {exit ($ASPECT <= 1.3)}"; then
+    WIDTH=$MED
+else
+    WIDTH=$MED
+fi
 
 if grep -q "^PixWidth=[0-9]\+" "$GAMEDIR/settings.ini"; then
     sed -i "s/^PixWidth=[0-9]\+/PixWidth=$WIDTH/" "$GAMEDIR/settings.ini"
@@ -72,6 +66,7 @@ fi
 
 # Run the game
 echo "Loading, please wait!" > $CUR_TTY
+$GPTOKEYB "sonicmania" xbox360 & 
 SDL_GAMECONTROLLERCONFIG="$sdl_controllerconfig"
 ./sonicmania
 
