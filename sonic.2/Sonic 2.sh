@@ -20,7 +20,7 @@ source $controlfolder/device_info.txt
 [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
 
 # Set variables
-GAMEDIR="/$directory/ports/sonic.2"
+GAMEDIR="/$directory/ports/sonic2"
 WIDTH=$((DISPLAY_WIDTH / 2))
 > "$GAMEDIR/log.txt" && exec > >(tee "$GAMEDIR/log.txt") 2>&1
 

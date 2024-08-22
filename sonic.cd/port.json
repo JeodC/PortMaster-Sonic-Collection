@@ -3,7 +3,7 @@
   "name": "sonic.cd.zip",
   "items": [
     "Sonic CD.sh",
-    "sonic.cd"
+    "soniccd"
   ],
   "items_opt": [],
   "attr": {
