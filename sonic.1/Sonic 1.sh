@@ -27,8 +27,8 @@ WIDTH=$((DISPLAY_WIDTH / 2))
 cd $GAMEDIR
 
 # Exports
-export LD_LIBRARY_PATH="$GAMEDIR/libs":$LD_LIBRARY_PATH
-export SDL_GAMECONTROLLERCONFIG="$sdl_controllerconfig" 
+export LD_LIBRARY_PATH="/usr/lib:$GAMEDIR/libs":$LD_LIBRARY_PATH
+export SDL_GAMECONTROLLERCONFIG="$sdl_controllerconfig"
 
 # Setup gl4es environment
 if [ -f "${controlfolder}/libgl_${CFW_NAME}.txt" ]; then 
