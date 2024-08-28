@@ -21,21 +21,14 @@ source $controlfolder/device_info.txt
 
 # Set variables
 GAMEDIR="/$directory/ports/sonic1"
+WIDTH=$((DISPLAY_WIDTH / 2))
 > "$GAMEDIR/log.txt" && exec > >(tee "$GAMEDIR/log.txt") 2>&1
-
-# Set current virtual screen
-if [ "$CFW_NAME" == "muOS" ]; then
-  /opt/muos/extra/muxlog & CUR_TTY="/tmp/muxlog_info"
-elif [ "$CFW_NAME" == "TrimUI" ]; then
-  CUR_TTY="/dev/fd/1"
-else
-  CUR_TTY="/dev/tty0"
-fi
 
 cd $GAMEDIR
 
 # Exports
-LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$GAMEDIR/libs"
+export LD_LIBRARY_PATH="$GAMEDIR/libs":$LD_LIBRARY_PATH
+export SDL_GAMECONTROLLERCONFIG="$sdl_controllerconfig" 
 
 # Setup gl4es environment
 if [ -f "${controlfolder}/libgl_${CFW_NAME}.txt" ]; then 
@@ -43,9 +36,6 @@ if [ -f "${controlfolder}/libgl_${CFW_NAME}.txt" ]; then
 else
   source "${controlfolder}/libgl_default.txt"
 fi
-
-if [ -n "$(pgrep sway)" ]; then
-  timeout 7 watch swaymsg '[app_id=sonic2013] fullscreen enable' &
 
 # Permissions
 $ESUDO chmod 666 /dev/tty0
@@ -93,7 +83,6 @@ fi
 # Run the game
 echo "Loading, please wait!" > $CUR_TTY
 $GPTOKEYB $GAME -c "sonic.gptk" &
-SDL_GAMECONTROLLERCONFIG="$sdl_controllerconfig"
 ./$GAME
 
 $ESUDO kill -9 $(pidof gptokeyb)
