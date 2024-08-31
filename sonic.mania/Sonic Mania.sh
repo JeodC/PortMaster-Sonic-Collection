@@ -52,6 +52,8 @@ fi
 
 if grep -q "^PixWidth=[0-9]\+" "$GAMEDIR/settings.ini"; then
     sed -i "s/^PixWidth=[0-9]\+/PixWidth=$WIDTH/" "$GAMEDIR/settings.ini"
+    sed -i "s/^PixWidth=[0-9]\+/fsWidth=$DISPLAY_WIDTH/" "$GAMEDIR/settings.ini"
+    sed -i "s/^PixWidth=[0-9]\+/fsHeight=$DISPLAY_HEIGHT/" "$GAMEDIR/settings.ini"
 else
     echo "Possible invalid or missing settings.ini!" > $CUR_TTY
 fi
