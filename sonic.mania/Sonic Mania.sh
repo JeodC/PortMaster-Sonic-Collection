@@ -1,4 +1,5 @@
 #!/bin/bash
+# PORTMASTER: sonic.mania.zip, Sonic Mania.sh
 
 XDG_DATA_HOME=${XDG_DATA_HOME:-$HOME/.local/share}
 
@@ -14,25 +15,20 @@ fi
 
 source $controlfolder/control.txt
 get_controls
-
-# Source Device Info
-source $controlfolder/device_info.txt
 [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
 
 # Set variables
 GAMEDIR="/$directory/ports/sonicmania"
 > "$GAMEDIR/log.txt" && exec > >(tee "$GAMEDIR/log.txt") 2>&1
 
+# CD and set permissions
 cd $GAMEDIR
+> "$GAMEDIR/log.txt" && exec > >(tee "$GAMEDIR/log.txt") 2>&1
+$ESUDO chmod +x -R $GAMEDIR/*
 
 # Exports
-export LD_LIBRARY_PATH="$GAMEDIR/libs":$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH="usr/lib:$GAMEDIR/libs":$LD_LIBRARY_PATH
 export SDL_GAMECONTROLLERCONFIG="$sdl_controllerconfig"
-
-# Permissions
-$ESUDO chmod 666 /dev/tty0
-$ESUDO chmod 666 /dev/tty1
-$ESUDO chmod 777 $GAMEDIR/sonicmania
 
 # Modify PixWidth
 MED=320 # 4:3
@@ -50,19 +46,16 @@ else
     WIDTH=$MED
 fi
 
-if grep -q "^PixWidth=[0-9]\+" "$GAMEDIR/settings.ini"; then
-    sed -i "s/^PixWidth=[0-9]\+/PixWidth=$WIDTH/" "$GAMEDIR/settings.ini"
-    sed -i "s/^PixWidth=[0-9]\+/fsWidth=$DISPLAY_WIDTH/" "$GAMEDIR/settings.ini"
-    sed -i "s/^PixWidth=[0-9]\+/fsHeight=$DISPLAY_HEIGHT/" "$GAMEDIR/settings.ini"
+if grep -q "^pixWidth=[0-9]\+" "$GAMEDIR/Settings.ini"; then
+    sed -i "s/^pixWidth=[0-9]\+/pixWidth=$WIDTH/" "$GAMEDIR/Settings.ini"
 else
-    echo "Possible invalid or missing settings.ini!" > $CUR_TTY
+    echo "Possible invalid or missing Settings.ini!"
 fi
 
 # Run the game
-echo "Loading, please wait!" > $CUR_TTY
 $GPTOKEYB "sonicmania" & 
+pm_platform_helper "sonicmania"
 ./sonicmania
 
-$ESUDO kill -9 $(pidof gptokeyb)
-$ESUDO systemctl restart oga_events &
-printf "\033c" > /dev/tty1
+# Cleanup
+pm_finish
