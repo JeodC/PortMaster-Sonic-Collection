@@ -21,5 +21,5 @@ cmake --build build --config release
 
 In both cases, when the build is completed, retrieve the following files:
 
-`Sonic-Mania-Decompilation\build\libGame.so` -- Copy to `ports/sonicmania` as `Game.so`
+`Sonic-Mania-Decompilation\build\libGame.so` -- Copy to `ports/sonicmania` as `Game.so`  
 `Sonic-Mania-Decompilation\build\dependencies\RSDKv5\RSDKv5` -- Copy to `ports/sonicmania` as `sonicmania`
