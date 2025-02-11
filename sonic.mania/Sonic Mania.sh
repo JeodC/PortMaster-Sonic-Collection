@@ -14,48 +14,68 @@ else
 fi
 
 source $controlfolder/control.txt
-get_controls
 [ -f "${controlfolder}/mod_${CFW_NAME}.txt" ] && source "${controlfolder}/mod_${CFW_NAME}.txt"
+get_controls
 
 # Set variables
 GAMEDIR="/$directory/ports/sonicmania"
 > "$GAMEDIR/log.txt" && exec > >(tee "$GAMEDIR/log.txt") 2>&1
 
-# CD and set permissions
 cd $GAMEDIR
-> "$GAMEDIR/log.txt" && exec > >(tee "$GAMEDIR/log.txt") 2>&1
-$ESUDO chmod +x -R $GAMEDIR/*
 
 # Exports
-export LD_LIBRARY_PATH="usr/lib:$GAMEDIR/libs":$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH="$GAMEDIR/libs":$LD_LIBRARY_PATH
 export SDL_GAMECONTROLLERCONFIG="$sdl_controllerconfig"
 
-# Modify PixWidth
-MED=320 # 4:3
-HIGH=424 # 16:9
+# Permissions
+$ESUDO chmod 666 /dev/tty0
+$ESUDO chmod 666 /dev/tty1
+$ESUDO chmod 777 $GAMEDIR/sonicmania
 
-# Calculate the aspect ratio as a floating-point number
+# Set Pix Values
+HMED=240 # 4:3
+HHIGH=344 # 16:9
+WMED=320  # 4:3
+WHIGH=424 # 16:9
+
+# Calculate aspect ratio
 ASPECT=$(awk "BEGIN {print $DISPLAY_WIDTH / $DISPLAY_HEIGHT}")
 
-# Set WIDTH based on aspect ratio comparisons
-if awk "BEGIN {exit ($ASPECT > 1.3)}"; then
-    WIDTH=$HIGH
-elif awk "BEGIN {exit ($ASPECT <= 1.3)}"; then
-    WIDTH=$MED
+# Choose Width and Height based on aspect ratio
+WIDTH=$(awk "BEGIN {print ($ASPECT > 1.5 ? $WHIGH : $WMED)}")
+HEIGHT=$(awk "BEGIN {print ($ASPECT > 1.5 ? $HHIGH : $HMED)}")
+
+# Ensure pixWidth and pixHeight keys exist or are updated
+if grep -q "^pixWidth=" "$GAMEDIR/Settings.ini"; then
+  sed -i "s/^pixWidth=[0-9]\+/pixWidth=$WIDTH/" "$GAMEDIR/Settings.ini"
 else
-    WIDTH=$MED
+  sed -i "/^\[Video\]/a pixWidth=$WIDTH" "$GAMEDIR/Settings.ini"
 fi
 
-if grep -q "^pixWidth=[0-9]\+" "$GAMEDIR/Settings.ini"; then
-    sed -i "s/^pixWidth=[0-9]\+/pixWidth=$WIDTH/" "$GAMEDIR/Settings.ini"
+if grep -q "^pixHeight=" "$GAMEDIR/Settings.ini"; then
+  sed -i "s/^pixHeight=[0-9]\+/pixHeight=$HEIGHT/" "$GAMEDIR/Settings.ini"
 else
-    echo "Possible invalid or missing Settings.ini!"
+  sed -i "/^\[Video\]/a pixHeight=$HEIGHT" "$GAMEDIR/Settings.ini"
 fi
+
+# Ensure fsWidth and fsHeight keys exist or are updated
+if grep -q "^fsWidth=" "$GAMEDIR/Settings.ini"; then
+  sed -i "s/^fsWidth=[0-9]\+/fsWidth=$DISPLAY_WIDTH/" "$GAMEDIR/Settings.ini"
+else
+  sed -i "/^\[Video\]/a fsWidth=$DISPLAY_WIDTH" "$GAMEDIR/Settings.ini"
+fi
+
+if grep -q "^fsHeight=" "$GAMEDIR/Settings.ini"; then
+  sed -i "s/^fsHeight=[0-9]\+/fsHeight=$DISPLAY_HEIGHT/" "$GAMEDIR/Settings.ini"
+else
+  sed -i "/^\[Video\]/a fsHeight=$DISPLAY_HEIGHT" "$GAMEDIR/Settings.ini"
+fi
+
 
 # Run the game
-$GPTOKEYB "sonicmania" & 
-pm_platform_helper "sonicmania"
+pm_message "Loading, please wait!"
+pm_platform_helper "$GAMEDIR/sonicmania"
+$GPTOKEYB "sonicmania" &
 ./sonicmania
 
-# Cleanup
 pm_finish
